@@ -1,9 +1,14 @@
-name: Check format
-
-- uses: actions/checkout@master
-  with:
-    ref: ${{ github.event.pull_request.head.sha }}
-- name: PEP8 Action
-  uses: quentinguidee/pep8-action@v2.0.13-dev
-  with:
-    arguments: '--max-line-length=120'
+name: Format python code
+on: push
+jobs:
+  autopep8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: autopep8
+        uses: peter-evans/autopep8@v1
+        with:
+          args: --recursive --in-place --aggressive --aggressive .
+      - name: Fail if autopep8 made changes
+        if: steps.autopep8.outputs.exit-code == 2
+        run: exit 1
